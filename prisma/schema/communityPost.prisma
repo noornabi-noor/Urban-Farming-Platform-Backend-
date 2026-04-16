@@ -1,0 +1,10 @@
+model CommunityPost {
+  id          String   @id @default(uuid())
+  userId      String
+  postContent String
+  postDate    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

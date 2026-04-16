@@ -1,0 +1,15 @@
+model Produce {
+  id                  String              @id @default(uuid())
+  vendorId            String
+  name                String
+  description         String
+  price               Float
+  category            String
+  certificationStatus CertificationStatus @default(PENDING)
+  availableQuantity   Int
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  vendor              VendorProfile       @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  orders              Order[]
+}

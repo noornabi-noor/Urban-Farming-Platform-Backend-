@@ -1,0 +1,15 @@
+model PlantTracking {
+  id            String   @id @default(uuid())
+  userId        String
+  rentalSpaceId String
+  plantName     String
+  healthStatus  String
+  growthStage   String
+  lastWatered   DateTime?
+  harvestTime   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rentalSpace   RentalSpace @relation(fields: [rentalSpaceId], references: [id], onDelete: Cascade)
+}
