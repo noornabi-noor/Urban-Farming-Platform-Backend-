@@ -4,6 +4,8 @@ import { VendorRoutes } from "../modules/vendor/vendor.routes";
 import { ProduceRoutes } from "../modules/produce/produce.routes";
 import { RentalSpaceRoutes } from "../modules/rentalSpace/rentalSpace.routes";
 import { PlantTrackingRoutes } from "../modules/plantTracking/plantTracking.routes";
+import { OrderRoutes } from "../modules/order/order.routes";
+import { CommunityRoutes } from "../modules/community/community.routes";
 
 const router = Router();
 
@@ -12,6 +14,8 @@ router.use("/vendors", VendorRoutes);
 router.use("/produces", ProduceRoutes);
 router.use("/rental-spaces", RentalSpaceRoutes);
 router.use("/plant-trackings", PlantTrackingRoutes);
+router.use("/orders", OrderRoutes);
+router.use("/community", CommunityRoutes);
 
 router.get("/", (req: Request, res: Response) => {
   res.status(200).json({
@@ -20,4 +24,4 @@ router.get("/", (req: Request, res: Response) => {
   });
 });
 
-export const indexRoutes = router;
+export default router;
