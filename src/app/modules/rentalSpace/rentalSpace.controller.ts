@@ -16,7 +16,7 @@ const createRentalSpace = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllRentalSpaces = catchAsync(async (req: Request, res: Response) => {
-  const result = await RentalSpaceService.getAllRentalSpacesFromDB();
+  const result = await RentalSpaceService.getAllRentalSpacesFromDB(req.query);
 
   sendResponse(res, {
     statusCode: status.OK,

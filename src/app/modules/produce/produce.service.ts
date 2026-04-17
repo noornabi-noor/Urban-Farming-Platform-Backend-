@@ -1,5 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { TProduce } from "./produce.interface";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import { produceFilterableFields, produceSearchableFields } from "./produce.constant";
 
 const createProduceIntoDB = async (payload: TProduce) => {
   const result = await prisma.produce.create({
@@ -8,13 +10,19 @@ const createProduceIntoDB = async (payload: TProduce) => {
   return result;
 };
 
-const getAllProducesFromDB = async (query: any) => {
-  // Basic filtering can be added here
-  const result = await prisma.produce.findMany({
-    include: {
-      vendor: true,
-    },
-  });
+const getAllProducesFromDB = async (query: Record<string, unknown>) => {
+  const produceQuery = new QueryBuilder(prisma.produce, query, {
+    searchableFields: produceSearchableFields,
+    filterableFields: produceFilterableFields,
+  })
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .include({ vendor: true });
+
+  const result = await produceQuery.execute();
   return result;
 };
 

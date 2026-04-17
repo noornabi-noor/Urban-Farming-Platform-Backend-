@@ -1,5 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { TVendorProfile } from "./vendor.interface";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import { vendorFilterableFields, vendorSearchableFields } from "./vendor.constant";
 
 const createVendorProfileIntoDB = async (userId: string, payload: Partial<TVendorProfile>) => {
   const result = await prisma.vendorProfile.create({
@@ -12,12 +14,19 @@ const createVendorProfileIntoDB = async (userId: string, payload: Partial<TVendo
   return result;
 };
 
-const getAllVendorProfilesFromDB = async () => {
-  const result = await prisma.vendorProfile.findMany({
-    include: {
-      user: true,
-    },
-  });
+const getAllVendorProfilesFromDB = async (query: Record<string, unknown>) => {
+  const vendorQuery = new QueryBuilder(prisma.vendorProfile, query, {
+    searchableFields: vendorSearchableFields,
+    filterableFields: vendorFilterableFields,
+  })
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .include({ user: true });
+
+  const result = await vendorQuery.execute();
   return result;
 };
 

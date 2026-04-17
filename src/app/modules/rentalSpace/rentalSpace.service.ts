@@ -1,5 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { TRentalSpace } from "./rentalSpace.interface";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import { rentalSpaceFilterableFields, rentalSpaceSearchableFields } from "./rentalSpace.constant";
 
 const createRentalSpaceIntoDB = async (payload: TRentalSpace) => {
   const result = await prisma.rentalSpace.create({
@@ -8,12 +10,19 @@ const createRentalSpaceIntoDB = async (payload: TRentalSpace) => {
   return result;
 };
 
-const getAllRentalSpacesFromDB = async () => {
-  const result = await prisma.rentalSpace.findMany({
-    include: {
-      vendor: true,
-    },
-  });
+const getAllRentalSpacesFromDB = async (query: Record<string, unknown>) => {
+  const rentalSpaceQuery = new QueryBuilder(prisma.rentalSpace, query, {
+    searchableFields: rentalSpaceSearchableFields,
+    filterableFields: rentalSpaceFilterableFields,
+  })
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .include({ vendor: true });
+
+  const result = await rentalSpaceQuery.execute();
   return result;
 };
 

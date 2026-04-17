@@ -35,7 +35,7 @@ export interface IQueryParams {
     sortOrder?: 'asc' | 'desc';
     fields?: string;
     include?: string;
-    [key: string]: string | undefined;
+    [key: string]: any;
 }
 
 export interface IQueryConfig {

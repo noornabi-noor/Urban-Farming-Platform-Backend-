@@ -1,5 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { TCommunityPost } from "./community.interface";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import { communityFilterableFields, communitySearchableFields } from "./community.constant";
 
 const createPostIntoDB = async (payload: TCommunityPost) => {
   const result = await prisma.communityPost.create({
@@ -8,15 +10,19 @@ const createPostIntoDB = async (payload: TCommunityPost) => {
   return result;
 };
 
-const getAllPostsFromDB = async () => {
-  const result = await prisma.communityPost.findMany({
-    include: {
-      user: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+const getAllPostsFromDB = async (query: Record<string, unknown>) => {
+  const postQuery = new QueryBuilder(prisma.communityPost, query, {
+    searchableFields: communitySearchableFields,
+    filterableFields: communityFilterableFields,
+  })
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .include({ user: true });
+
+  const result = await postQuery.execute();
   return result;
 };
 

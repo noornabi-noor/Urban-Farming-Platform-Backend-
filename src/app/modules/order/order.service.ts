@@ -1,5 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { TOrder } from "./order.interface";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import { orderFilterableFields, orderSearchableFields } from "./order.constant";
 
 const createOrderIntoDB = async (payload: TOrder) => {
   const result = await prisma.order.create({
@@ -8,13 +10,19 @@ const createOrderIntoDB = async (payload: TOrder) => {
   return result;
 };
 
-const getAllOrdersFromDB = async () => {
-  const result = await prisma.order.findMany({
-    include: {
-      user: true,
-      produce: true,
-    },
-  });
+const getAllOrdersFromDB = async (query: Record<string, unknown>) => {
+  const orderQuery = new QueryBuilder(prisma.order, query, {
+    searchableFields: orderSearchableFields,
+    filterableFields: orderFilterableFields,
+  })
+    .search()
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .include({ user: true, produce: true });
+
+  const result = await orderQuery.execute();
   return result;
 };
 

@@ -18,7 +18,7 @@ const createVendorProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllVendorProfiles = catchAsync(async (req: Request, res: Response) => {
-  const result = await VendorService.getAllVendorProfilesFromDB();
+  const result = await VendorService.getAllVendorProfilesFromDB(req.query);
 
   sendResponse(res, {
     statusCode: status.OK,
