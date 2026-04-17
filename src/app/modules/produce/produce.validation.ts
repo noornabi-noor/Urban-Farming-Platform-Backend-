@@ -3,7 +3,7 @@ import { CertificationStatus } from "@prisma/client";
 
 const createProduceSchema = z.object({
   body: z.object({
-    vendorId: z.string().min(1, "Vendor ID is required"),
+    vendorId: z.string().optional(),
     name: z.string().min(1, "Name is required"),
     description: z.string().min(1, "Description is required"),
     price: z.number().min(0.01, "Price must be greater than 0"),

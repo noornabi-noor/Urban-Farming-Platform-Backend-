@@ -4,6 +4,9 @@ import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 import { RentalSpaceService } from "./rentalSpace.service";
 
+import { prisma } from "../../lib/prisma";
+import AppError from "../../errorHelpers/AppError";
+
 const createRentalSpace = catchAsync(async (req: Request, res: Response) => {
   const result = await RentalSpaceService.createRentalSpaceIntoDB(req.body);
 

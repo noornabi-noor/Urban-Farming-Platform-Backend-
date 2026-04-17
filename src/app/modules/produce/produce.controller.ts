@@ -4,8 +4,31 @@ import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
 import { ProduceService } from "./produce.service";
 
+import { prisma } from "../../lib/prisma";
+import AppError from "../../errorHelpers/AppError";
+
 const createProduce = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProduceService.createProduceIntoDB(req.body);
+  const userId = req.user!.id;
+  const userRole = req.user!.role;
+
+  let vendorId = req.body.vendorId;
+
+  // If vendorId is not provided (or user is a VENDOR), find the profile automatically
+  if (!vendorId || userRole === "VENDOR") {
+    const vendorProfile = await prisma.vendorProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!vendorProfile) {
+      throw new AppError(status.NOT_FOUND, "Vendor profile not found for this user!");
+    }
+    vendorId = vendorProfile.id;
+  }
+
+  const result = await ProduceService.createProduceIntoDB({
+    ...req.body,
+    vendorId,
+  });
 
   sendResponse(res, {
     statusCode: status.CREATED,

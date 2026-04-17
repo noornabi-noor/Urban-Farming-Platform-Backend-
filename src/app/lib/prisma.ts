@@ -1,10 +1,17 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
+import { envVars } from "../config/env";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
+
+const pool = new pg.Pool({ connectionString: envVars.DATABASE_URL });
+const adapter = new PrismaPg(pool);
 
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
+    adapter,
     log: ["query", "info", "warn", "error"],
   });
 

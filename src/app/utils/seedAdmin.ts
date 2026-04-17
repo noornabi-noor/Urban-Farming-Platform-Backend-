@@ -1,6 +1,7 @@
-import { envVars } from "../config/env";
 import { Role } from "@prisma/client";
 import { prisma } from "../lib/prisma";
+import bcrypt from "bcryptjs";
+import { envVars } from "../config/env";
 
 async function seedAdmin() {
   try {
@@ -14,19 +15,37 @@ async function seedAdmin() {
       where: { email: adminData.email },
     });
 
-    if (existingUser) {
-      console.log("Admin already exists!");
+    // Check if user exists but lacks a password in User model
+    if (existingUser && existingUser.password) {
+      console.log("Admin already exists with password!");
       return;
     }
 
-    // Sign up via auth API
+    // Hash password for manual AuthService compatibility
+    const hashedPassword = await bcrypt.hash(adminData.password, 12);
+
+    if (existingUser) {
+        console.log("Admin exists without password. Updating password and role...");
+        await prisma.user.update({
+            where: { email: adminData.email },
+            data: {
+              password: hashedPassword,
+              role: Role.ADMIN,
+              emailVerified: true,
+            },
+        });
+        console.log("Admin updated successfully!");
+        return;
+    }
+
+    // If completely missing, create via fetch then update (to keep Session/Account sync)
+    // Actually simpler to just wait for better-auth once, but for now we manually handle User model
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
 
-    // Only add Origin if APP_URL is defined
-    if (envVars.APP_URL) {
-      headers["Origin"] = envVars.APP_URL;
+    if (envVars.BETTER_AUTH_URL) {
+      headers["Origin"] = envVars.BETTER_AUTH_URL;
     }
 
     const response = await fetch(
@@ -54,10 +73,11 @@ async function seedAdmin() {
       return;
     }
 
-    // Promote user to ADMIN
+    // Promote user to ADMIN and set password for manual login
     await prisma.user.update({
       where: { email: adminData.email },
       data: {
+        password: hashedPassword,
         role: Role.ADMIN,
         emailVerified: true,
       },

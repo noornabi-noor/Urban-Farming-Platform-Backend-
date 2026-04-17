@@ -5,8 +5,7 @@ import status from "http-status";
 import { VendorService } from "./vendor.service";
 
 const createVendorProfile = catchAsync(async (req: Request, res: Response) => {
-  // Assuming userId comes from auth middleware in the future
-  const userId = req.body.userId; 
+  const userId = req.user!.id; 
   const result = await VendorService.createVendorProfileIntoDB(userId, req.body);
 
   sendResponse(res, {

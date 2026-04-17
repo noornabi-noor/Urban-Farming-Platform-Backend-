@@ -38,9 +38,21 @@ const registerUserIntoDB = async (payload: any) => {
 const loginUser = async (payload: any) => {
   const user = await prisma.user.findUnique({
     where: { email: payload.email },
+    include: {
+      accounts: {
+        where: { providerId: "credential" },
+      },
+    },
   });
 
-  if (!user || !user.password) {
+  if (!user) {
+    throw new AppError(status.UNAUTHORIZED, "Invalid email or password!");
+  }
+
+  // Get password from either User model or Better Auth Account model
+  const hashedPassword = user.password || user.accounts[0]?.password;
+
+  if (!hashedPassword) {
     throw new AppError(status.UNAUTHORIZED, "Invalid email or password!");
   }
 
@@ -48,7 +60,7 @@ const loginUser = async (payload: any) => {
     throw new AppError(status.FORBIDDEN, "Your account is not active!");
   }
 
-  const isPasswordValid = await bcrypt.compare(payload.password, user.password);
+  const isPasswordValid = await bcrypt.compare(payload.password, hashedPassword);
 
   if (!isPasswordValid) {
     throw new AppError(status.UNAUTHORIZED, "Invalid email or password!");

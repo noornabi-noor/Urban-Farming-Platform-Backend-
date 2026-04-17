@@ -5,7 +5,8 @@ import status from "http-status";
 import { OrderService } from "./order.service";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
-  const result = await OrderService.createOrderIntoDB(req.body);
+  const userId = req.user!.id;
+  const result = await OrderService.createOrderIntoDB({ ...req.body, userId });
 
   sendResponse(res, {
     statusCode: status.CREATED,
@@ -27,8 +28,7 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMyOrders = catchAsync(async (req: Request, res: Response) => {
-  // Assuming userId comes from auth/session
-  const userId = req.body.userId; 
+  const userId = req.user!.id; 
   const result = await OrderService.getOrdersByUserIdFromDB(userId);
 
   sendResponse(res, {

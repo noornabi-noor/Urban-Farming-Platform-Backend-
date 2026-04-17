@@ -5,7 +5,8 @@ import status from "http-status";
 import { CommunityService } from "./community.service";
 
 const createPost = catchAsync(async (req: Request, res: Response) => {
-  const result = await CommunityService.createPostIntoDB(req.body);
+  const userId = req.user!.id;
+  const result = await CommunityService.createPostIntoDB({ ...req.body, userId });
 
   sendResponse(res, {
     statusCode: status.CREATED,

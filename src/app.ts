@@ -7,7 +7,8 @@ import status from "http-status";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import router from "./app/routes";
 import { notFound } from "./app/middleware/notFound";
-import swaggerUi from "swagger-ui-express";
+import { auth } from "./app/lib/auth";
+import { toNodeHandler } from "better-auth/node";
 
 import rateLimit from "express-rate-limit";
 
@@ -43,6 +44,9 @@ app.get("/", (req: Request, res: Response) => {
 
 // API Routes
 app.use("/api/v1", router);
+
+// Better Auth Routes
+app.use("/api/auth", (req, res) => toNodeHandler(auth)(req, res));
 
 // Error Handling
 app.use(notFound);
