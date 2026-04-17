@@ -7,11 +7,22 @@ import status from "http-status";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import router from "./app/routes";
 import { notFound } from "./app/middleware/notFound";
+import swaggerUi from "swagger-ui-express";
+
+import rateLimit from "express-rate-limit";
 
 const app: Application = express();
 
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later",
+});
+
 // Middlewares
 app.use(helmet());
+app.use(limiter);
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:3000",
   credentials: true

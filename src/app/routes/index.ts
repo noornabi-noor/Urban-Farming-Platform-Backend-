@@ -6,6 +6,7 @@ import { RentalSpaceRoutes } from "../modules/rentalSpace/rentalSpace.routes";
 import { PlantTrackingRoutes } from "../modules/plantTracking/plantTracking.routes";
 import { OrderRoutes } from "../modules/order/order.routes";
 import { CommunityRoutes } from "../modules/community/community.routes";
+import { SustainabilityCertRoutes } from "../modules/sustainabilityCert/sustainabilityCert.routes";
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use("/rental-spaces", RentalSpaceRoutes);
 router.use("/plant-trackings", PlantTrackingRoutes);
 router.use("/orders", OrderRoutes);
 router.use("/community", CommunityRoutes);
+router.use("/sustainability-certs", SustainabilityCertRoutes);
 
 router.get("/", (req: Request, res: Response) => {
   res.status(200).json({
